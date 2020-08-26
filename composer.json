@@ -1,0 +1,33 @@
+{
+    "name": "saulmoralespa/deprisa-api-php",
+    "description": "Deprisa API PHP",
+    "keywords": [
+        "deprisa", "deprisa-php", "deprisa-sdk",
+        "api", "php-deprisa", "deprisa-api"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Saul Morales Pacheco",
+            "email": "info@saulmoralespa.com",
+            "homepage": "http://saulmoralespa.com",
+            "role": "Developer"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "^7.0",
+        "spatie/array-to-xml": "^2.13",
+        "ext-simplexml": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "6.*",
+        "vlucas/phpdotenv": "^5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Saulmoralespa\\Deprisa\\": "src/"
+        }
+    }
+}
