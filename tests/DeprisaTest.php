@@ -13,7 +13,10 @@ class DeprisaTest extends TestCase
         $dotenv = Dotenv\Dotenv::createMutable(__DIR__ . '/../');
         $dotenv->load();
 
-        $this->deprisa = new Client();
+        $codeClient = $_ENV['CODE_CLIENT'];
+        $codeCenter = $_ENV['CODE_CENTER'];
+
+        $this->deprisa = new Client($codeClient, $codeCenter);
         $this->deprisa->sandboxMode(false);
     }
 
@@ -23,8 +26,6 @@ class DeprisaTest extends TestCase
             'TIPO_ENVIO' => 'N',
             'NUMERO_BULTOS' => 1,
             'KILOS' => 5,
-            'CLIENTE_REMITENTE' => '99999999',
-            'CENTRO_REMITENTE' => '99',
             'POBLACION_REMITENTE' => 'BOGOTA',
             'PAIS_DESTINATARIO' => '',
             'POBLACION_DESTINATARIO' => 'BOGOTA',
@@ -51,8 +52,6 @@ class DeprisaTest extends TestCase
             'CODIGO_ADMISION' => '123',
             'NUMERO_ENVIO' => '',
             'NUMERO_BULTOS' => 2,
-            'CLIENTE_REMITENTE' => '00000037',
-            'CENTRO_REMITENTE' => '47',
             'NOMBRE_REMITENTE' => '',
             'DIRECCION_REMITENTE' => '',
             'PAIS_REMITENTE' => '057',
@@ -68,18 +67,18 @@ class DeprisaTest extends TestCase
             'NOMBRE_DESTINATARIO' => 'Pedro Perez',
             'DIRECCION_DESTINATARIO' => 'calle 50 N 3-23',
             'PAIS_DESTINATARIO' => '057',
-            'CODIGO_POSTAL_DESTINATARIO' => '110911',
-            'POBLACION_DESTINATARIO' => 'BOGOTA',
+            'CODIGO_POSTAL_DESTINATARIO' => '054040',
+            'POBLACION_DESTINATARIO' => 'RIONEGRO',
             'TIPO_DOC_DESTINATARIO' => 'CC',
             'DOCUMENTO_IDENTIDAD_DESTINATARIO' => '73082468',
             'PERSONA_CONTACTO_DESTINATARIO' => 'Raul Reyes',
             'TELEFONO_CONTACTO_DESTINATARIO' => '3127534562',
-            'DEPARTAMENTO_DESTINATARIO' => '',
+            'DEPARTAMENTO_DESTINATARIO' => 'ANTIOQUIA',
             'EMAIL_DESTINATARIO' => 'leireoo@gmail.com',
             'INCOTERM' => 'FCA',
             'RAZON_EXPORTAR' => '01',
             'EMBALAJE' => 'EV',
-            'CODIGO_SERVICIO' => '1000',
+            'CODIGO_SERVICIO' => '3005',
             'KILOS' => 4,
             'VOLUMEN' => 0.5,
             'LARGO' => 10,
@@ -109,6 +108,7 @@ class DeprisaTest extends TestCase
             ]*/
         ];
         $res = $this->deprisa->admission($params);
+        var_dump($res);
         $this->assertNotEmpty($res['ADMISIONES'], $res);
         var_dump($res);
     }

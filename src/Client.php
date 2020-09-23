@@ -14,10 +14,13 @@ class Client
     const API_VERSION = "restv1";
 
     protected static $_sandbox = false;
+    private $codeClient;
+    private $codeCenter;
 
-    public function __construct()
+    public function __construct($codeClient, $codeCenter)
     {
-
+        $this->codeClient = $codeClient;
+        $this->codeCenter = $codeCenter;
     }
 
     public function sandboxMode($status = false)
@@ -44,14 +47,18 @@ class Client
     public function liquidation(array $params)
     {
         try{
-            $params = ArrayToXml::convert(['ADMISION' => $params], 'COTIZACIONES');
+            $params = ArrayToXml::convert($this->getArrayXml($params), 'COTIZACIONES');
             $response = $this->client()->post("admision_envios/cotizar", [
                "headers" => [
                    "Content-Type" => "application/xml"
                ],
                "body" => $params
-           ]);
-           return self::responseJson($response);
+            ]);
+
+            $body = self::responseArray($response);
+            if (isset($body['ERRORES']['ERROR']))
+                throw new \Exception($this->getErrors($body['ERRORES']['ERROR']));
+            return $body;
         }catch (RequestException $exception){
             throw new \Exception($exception->getMessage());
         }
@@ -60,14 +67,18 @@ class Client
     public function admission(array $params)
     {
         try{
-            $params = ArrayToXml::convert(['ADMISION' => $params], 'ADMISIONES');
+            $params = ArrayToXml::convert($this->getArrayXml($params), 'ADMISIONES');
             $response = $this->client()->post("admision_envios", [
                 "headers" => [
                     "Content-Type" => "application/xml"
                 ],
                 "body" => $params
             ]);
-            return self::responseJson($response);
+
+            $body = self::responseArray($response);
+            if (isset($body['ERRORES']['ERROR']))
+                throw new \Exception($this->getErrors($body['ERRORES']['ERROR']));
+            return $body;
         }catch (RequestException $exception){
             throw new \Exception($exception->getMessage());
         }
@@ -84,7 +95,11 @@ class Client
                 ],
                 "body" => $params
             ]);
-            return self::responseJson($response);
+
+            $body = self::responseArray($response);
+            if (isset($body['ERRORES']['ERROR']))
+                throw new \Exception($this->getErrors($body['ERRORES']['ERROR']));
+            return $body;
         }catch (RequestException $exception){
             throw new \Exception($exception->getMessage());
         }
@@ -94,13 +109,39 @@ class Client
     {
         try{
             $response = $this->client()->get("tracking/$tracking");
-            return self::responseJson($response);
+            return self::responseArray($response);
         }catch (RequestException $exception){
             throw new \Exception($exception->getMessage());
         }
     }
 
-    public static function responseJson($response)
+    public function getArrayXml(array $params)
+    {
+        $params = array_merge($params, [
+            'CLIENTE_REMITENTE' => $this->codeClient,
+            'CENTRO_REMITENTE' => $this->codeCenter
+        ]);
+
+        return ['ADMISION' => $params];
+
+    }
+
+    public function getErrors(array $errors)
+    {
+        $messages = [];
+
+        if (count($errors) === 1)
+            return $errors['@attributes']['ERROR_DESCRIPCION'];
+
+        foreach ($errors as $error) {
+            $messages[] = $error['@attributes']['ERROR_DESCRIPCION'];
+        }
+
+        return implode(PHP_EOL, $messages);
+
+    }
+
+    public static function responseArray($response)
     {
         $xml = $response->getBody()->getContents();
 
