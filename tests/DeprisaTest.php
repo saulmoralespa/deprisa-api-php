@@ -23,7 +23,7 @@ class DeprisaTest extends TestCase
     public function testLiquidation()
     {
         $params = [
-            'TIPO_ENVIO' => 'N',
+            'TIPO_ENVIO' => 'N',  //N,I,C
             'NUMERO_BULTOS' => 1,
             'KILOS' => 5,
             'POBLACION_REMITENTE' => 'BOGOTA',
@@ -55,13 +55,13 @@ class DeprisaTest extends TestCase
             'NOMBRE_REMITENTE' => '',
             'DIRECCION_REMITENTE' => '',
             'PAIS_REMITENTE' => '057',
-            'CODIGO_POSTAL_REMITENTE' => '110911',
-            'POBLACION_REMITENTE' => 'BOGOTA',
-            'TIPO_DOC_REMITENTE' => 'CC',
-            'DOCUMENTO_IDENTIDAD_REMITENTE' => '73082468',
-            'TELEFONO_CONTACTO_REMITENTE' => '3127534562',
+            'CODIGO_POSTAL_REMITENTE' => '',
+            'POBLACION_REMITENTE' => '',
+            'TIPO_DOC_REMITENTE' => '',
+            'DOCUMENTO_IDENTIDAD_REMITENTE' => '',
+            'TELEFONO_CONTACTO_REMITENTE' => '',
             'DEPARTAMENTO_REMITENTE' => '',
-            'EMAIL_REMITENTE' => 'aaa@ori.com',
+            'EMAIL_REMITENTE' => '',
             'CLIENTE_DESTINATARIO' => '99999999',
             'CENTRO_DESTINATARIO' => '99',
             'NOMBRE_DESTINATARIO' => 'Pedro Perez',
@@ -75,22 +75,21 @@ class DeprisaTest extends TestCase
             'TELEFONO_CONTACTO_DESTINATARIO' => '3127534562',
             'DEPARTAMENTO_DESTINATARIO' => 'ANTIOQUIA',
             'EMAIL_DESTINATARIO' => 'leireoo@gmail.com',
-            'INCOTERM' => 'FCA',
-            'RAZON_EXPORTAR' => '01',
-            'EMBALAJE' => 'EV',
+            'INCOTERM' => '',
+            'RAZON_EXPORTAR' => '',
+            'EMBALAJE' => '',
             'CODIGO_SERVICIO' => '3005',
             'KILOS' => 4,
-            'VOLUMEN' => 0.5,
+            'VOLUMEN' => '',
             'LARGO' => 10,
             'ANCHO' => 20,
             'ALTO' => 15,
             'NUMERO_REFERENCIA' => time(),
-            'IMPORTE_REEMBOLSO' => 100000,
+            'IMPORTE_REEMBOLSO' => '',
             'IMPORTE_VALOR_DECLARADO' => 1000,
             'TIPO_PORTES' => 'P',
             'OBSERVACIONES1' => 'Prueba de grabación en WEEX',
-            'OBSERVACIONES2' => 'Prueba de grabación en WEEX 2',
-            'TIPO_MERCANCIA' => 'P',
+            'TIPO_MERCANCIA' => '',
             'ASEGURAR_ENVIO' => 'S',
             'TIPO_MONEDA' => 'COP',
             /*'BULTOS_ADMISION' => [
@@ -108,25 +107,22 @@ class DeprisaTest extends TestCase
             ]*/
         ];
         $res = $this->deprisa->admission($params);
-        var_dump($res);
         $this->assertNotEmpty($res['ADMISIONES'], $res);
-        var_dump($res);
     }
 
     public function testLabels()
     {
         $labels = [];
         $labels['ETIQUETA'] = [
-        'NUMERO_ENVIO' => '999014604403',
+        'NUMERO_ENVIO' => '999061176505',
         'TIPO_IMPRESORA' => 'L' //láser
         ];
         $labels['ETIQUETA'] = [
-            'NUMERO_ENVIO' => '999014604404',
-            'TIPO_IMPRESORA' => 'L' //térmica
+            'NUMERO_ENVIO' => '999061176505',
+            'TIPO_IMPRESORA' => 'T'
         ];
         $res = $this->deprisa->labels($labels);
-        $this->assertNotEmpty($res['RESPUESTA_ETIQUETAS'], $res);
-        var_dump($res);
+        $this->assertNotEmpty($res['RESPUESTA_ETIQUETAS']["ETIQUETA"], $res);
     }
 
     public function testTracking()
@@ -134,6 +130,5 @@ class DeprisaTest extends TestCase
         $tracking = "999048263154";
         $res = $this->deprisa->tracking($tracking);
         $this->assertArrayHasKey('NUMERO_ENVIO', $res);
-        var_dump($res);
     }
 }
