@@ -31,7 +31,8 @@ class Client
     public function client()
     {
         return new GuzzleClient([
-            "base_uri" => $this->getBaseUrl()
+            "base_uri" => $this->getBaseUrl(),
+            "verify" => false
         ]);
     }
 
