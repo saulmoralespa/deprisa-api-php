@@ -5,7 +5,7 @@ use Saulmoralespa\Deprisa\Client;
 
 class DeprisaTest extends TestCase
 {
-    public $deprisa;
+    public Client $deprisa;
 
     protected function setUp(): void
     {
@@ -110,20 +110,17 @@ class DeprisaTest extends TestCase
     {
         $labels = [];
         $labels['ETIQUETA'] = [
-        'NUMERO_ENVIO' => '999061176505',
-        'TIPO_IMPRESORA' => 'L' //láser
-        ];
-        $labels['ETIQUETA'] = [
             'NUMERO_ENVIO' => '999061176505',
             'TIPO_IMPRESORA' => 'T'
         ];
 
         $res = $this->deprisa->labels($labels);
+        $this->assertTrue(key_exists('RESPUESTA_ETIQUETAS', $res));
     }
 
     public function testTracking()
     {
-        $tracking = "999048263154";
+        $tracking = "999061176505";
         $res = $this->deprisa->tracking($tracking);
         $this->assertArrayHasKey('NUMERO_ENVIO', $res);
     }

@@ -1,10 +1,11 @@
 <?php
 
-
 namespace Saulmoralespa\Deprisa;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Utils;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class Client
@@ -13,9 +14,9 @@ class Client
     const URL_BASE = 'https://conectados.avianca.com/conecta2/seam/resource/';
     const API_VERSION = "restv1";
 
-    protected static $_sandbox = false;
-    private $codeClient;
-    private $codeCenter;
+    protected static bool $sandbox = false;
+    private string $codeClient;
+    private string $codeCenter;
 
     public function __construct($codeClient, $codeCenter)
     {
@@ -23,12 +24,12 @@ class Client
         $this->codeCenter = $codeCenter;
     }
 
-    public function sandboxMode($status = false)
+    public function sandboxMode($status = false): void
     {
-        self::$_sandbox = $status;
+        self::$sandbox = $status;
     }
 
-    public function client()
+    public function client(): GuzzleClient
     {
         return new GuzzleClient([
             "base_uri" => $this->getBaseUrl(),
@@ -36,16 +37,20 @@ class Client
         ]);
     }
 
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         $url = self::URL_BASE;
 
-        if(self::$_sandbox)
+        if(self::$sandbox)
             $url = self::SANDBOX_URL_BASE;
         return $url . self::API_VERSION . '/';
     }
 
-    public function liquidation(array $params)
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function liquidation(array $params): array
     {
         try{
             $params = ArrayToXml::convert($this->getArrayXml($params), 'COTIZACIONES');
@@ -65,7 +70,11 @@ class Client
         }
     }
 
-    public function admission(array $params)
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function admission(array $params): array
     {
         try{
             $params = ArrayToXml::convert($this->getArrayXml($params), 'ADMISIONES');
@@ -86,7 +95,11 @@ class Client
     }
 
 
-    public function labels(array $params)
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function labels(array $params): array
     {
         try{
             $params = ArrayToXml::convert($params, 'ETIQUETAS');
@@ -106,7 +119,11 @@ class Client
         }
     }
 
-    public function tracking($tracking)
+    /**
+     * @throws GuzzleException
+     * @throws \Exception
+     */
+    public function tracking($tracking): array
     {
         try{
             $response = $this->client()->get("tracking/$tracking");
@@ -116,7 +133,7 @@ class Client
         }
     }
 
-    public function getArrayXml(array $params)
+    public function getArrayXml(array $params): array
     {
         $params = array_merge($params, [
             'CLIENTE_REMITENTE' => $this->codeClient,
@@ -142,14 +159,14 @@ class Client
 
     }
 
-    public static function responseArray($response)
+    public static function responseArray($response): array
     {
         $xml = $response->getBody()->getContents();
 
-        $json =  \GuzzleHttp\json_encode(
+        $json =  Utils::jsonEncode(
             simplexml_load_string($xml)
         );
 
-        return \GuzzleHttp\json_decode($json, true);
+        return Utils::jsonDecode($json, true);
     }
 }
